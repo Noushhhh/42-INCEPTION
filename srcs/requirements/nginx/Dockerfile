@@ -5,33 +5,38 @@ FROM debian:buster
 RUN apt-get update -y
 RUN apt-get upgrade -y
 
+RUN apt-get install -y dumb-init
+
 #INSTALL SERVER NGINX
 RUN apt-get install -y nginx
 
 #OPENSSL GENERATE KEY AND CERTIFICATE FILES
 RUN apt-get install -y openssl
 
-#GENERATE SSL KEY & CERTIFICATE
-	# 	req — to specify we want to use -x509
-	# 	x509 specify we want to create self-signed certificate
-	# 	nodes skip option to secure our certificate with passphrase so nginx can read it
-	# 	newrsa rsa:2048 — specifies that we want to generate both a new certificate and a new key with an RSA key of 2048 bits
-	# 	keyout /etc/.../yourfile.key — specifies the location of the output .key file.
-	# 	out /etc/.../yourfile.crt — specifies the location of the output .crt file.
+#GENERATE SSL KEY & CERTIFICATE to domain andric.42.fr
+	# openssl: invokes the OpenSSL command-line tool.
+	# req: specifies that the command is for generating a certificate request.
+	# -x509: indicates that the command is for generating a self-signed certificate.
+	# -newkey rsa:2048: specifies that a new RSA private key with a length of 2048 bits should be generated for the certificate.
+	# -nodes: indicates that the private key should not be encrypted with a passphrase.
+	# -subj /C=FR: specifies the subject information for the certificate request, in this case setting the country code to France.
+	# -keyout /etc/ssl/aandric.42.fr.key: specifies the path and filename for the private key file.
+	# -out /etc/ssl/aandric.42.fr.crt: specifies the path and filename for the self-signed certificate file.
 
 RUN openssl req -x509 -newkey rsa:2048 -nodes -subj /C=FR \
         -keyout /etc/ssl/aandric.42.fr.key -out /etc/ssl/aandric.42.fr.crt;
 
-#copy the .conf file 
+#copy the nginx conf file 
 COPY /conf/nginx.conf /etc/nginx/sites-available/aandric.42.fr.conf
 #install the debian dependencies
-RUN    ln -s /etc/nginx/sites-available/aandric.42.fr.conf /etc/nginx/sites-enabled/aandric.42.fr.conf
+# RUN    	ln -s /etc/nginx/sites-available/aandric.42.fr.conf /etc/nginx/sites-enabled/aandric.42.fr.conf
+RUN 	ln -s /etc/nginx/sites-available/aandric.42.fr.conf /etc/nginx/sites-enabled/
+
 #add metadata to the image to describe that the container is listening on port 443
 EXPOSE 443
 
 RUN apt-get install -y dumb-init
 
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-
 #set the default command for the container nginx run
 CMD ["nginx", "-g", "daemon off;"]

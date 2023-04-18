@@ -1,7 +1,6 @@
 version: "3.3"
 
 services:
-####################################### NGINX #########################################
   nginx:
     build:
       context: ./requirements/nginx
@@ -16,28 +15,23 @@ services:
     networks:
       - inception
     restart: always
-
-### MARIADB ###
-mariadb:
-  build:
-    context: ./requirements/mariadb/
-    args:
-      DB_DATABASE: ${DB_DATABASE}
-      DB_USER: ${DB_USER}
-      DB_USER_PASSWORD: ${DB_USER_PASSWORD}
-      DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-  image: mariadb
-  container_name: mariadb
-  env_file:
-    - .env
-  volumes:
-    - mariadb:/var/lib/mysql
-  networks:
-    - inception
-  restart: always
-
-
-# WORDPRESS
+  mariadb:
+    build:
+      context: ./requirements/mariadb/
+      args:
+        DB_DATABASE: ${DB_DATABASE}
+        DB_USER: ${DB_USER}
+        DB_USER_PASSWORD: ${DB_USER_PASSWORD}
+        DB_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    image: mariadb
+    container_name: mariadb
+    env_file:
+      - .env
+    volumes:
+      - mariadb:/var/lib/mysql
+    networks:
+      - inception
+    restart: always
   wordpress:
     build:
       context: ./requirements/wordpress
@@ -45,26 +39,17 @@ mariadb:
     container_name: wordpress
     env_file:
       - .env
-    depends_on: 
+    depends_on:
       - mariadb
     volumes:
       - wordpress:/var/www/html/wordpress
     networks:
       - inception
     restart: always
-
-# WORDPRESS DATA BASE
-
-### WORDPRESS WEBSITE FILES ###
-
-### DOCKER NETWORK ###
 networks:
   inception:
     driver: bridge
     name: inception
-  
-### VOLUMES ###
-
 volumes:
   mariadb:
     driver: local
@@ -72,11 +57,12 @@ volumes:
     driver_opts:
       type: none
       o: bind
-      device: /home/aandric/data/mariadb
+      device: /home/ana/data/mariadb
   wordpress:
     driver: local
     name: wordpress
     driver_opts:
       type: none
       o: bind
-      device: /home/aandric/data/wordpress
+      device: /home/ana/data/wordpress
+      
