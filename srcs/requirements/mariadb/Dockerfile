@@ -5,7 +5,6 @@ ARG DB_DATABASE
 ARG DB_USER_PASSWORD
 ARG DB_ROOT_PASSWORD
 
-
 # Install MariaDB server
 RUN apt-get update -y
 RUN apt-get upgrade -y
