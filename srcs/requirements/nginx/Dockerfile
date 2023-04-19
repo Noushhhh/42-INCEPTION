@@ -30,7 +30,7 @@ RUN openssl req -x509 -newkey rsa:2048 -nodes -subj /C=FR \
 COPY /conf/nginx.conf /etc/nginx/sites-available/aandric.42.fr.conf
 #install the debian dependencies
 # RUN    	ln -s /etc/nginx/sites-available/aandric.42.fr.conf /etc/nginx/sites-enabled/aandric.42.fr.conf
-RUN 	ln -s /etc/nginx/sites-available/aandric.42.fr.conf /etc/nginx/sites-enabled/
+RUN 	ln -s /etc/nginx/sites-available/aandric.42.fr.conf /etc/nginx/sites-enabled/aandric.42.fr.conf
 
 #add metadata to the image to describe that the container is listening on port 443
 EXPOSE 443

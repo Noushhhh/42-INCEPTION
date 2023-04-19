@@ -13,6 +13,7 @@ RUN apt-get install -y mariadb-server
 # set user mysql as owner
 RUN mkdir -p /var/run/mysql
 RUN chown -R mysql:mysql /var/run/mysql
+# RUN chmod 777 /var/run/mysql
 
 RUN service mysql start \
 	&& mysql -u root -e \

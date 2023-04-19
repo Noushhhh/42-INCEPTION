@@ -2,16 +2,17 @@ DOCKER-COMPOSE = docker-compose -f srcs/docker-compose.yml
 
 MARIADB_VOLUME = /home/ana/data/mariadb
 WORDPRESS_VOLUME = /home/ana/data/wordpress
+DEPENDECIES = $(MARIADB_VOLUME) $(WORDPRESS_VOLUME)
 
 all: up
 
 $(MARIADB_VOLUME):
-	mkdir -p $(MARIADB_VOLUME)
+	sudo mkdir -p $(MARIADB_VOLUME)
 
 $(WORDPRESS_VOLUME):
-	mkdir -p $(WORDPRESS_VOLUME)
+	sudo mkdir -p $(WORDPRESS_VOLUME)
 
-up:
+up:		$(DEPENDECIES)
 		@printf "Build, recreate, start containers\n"
 		$(DOCKER-COMPOSE) up -d --build
 
@@ -19,11 +20,11 @@ build:
 			@printf "Build images from dockerfiles\n"
 			$(DOCKER-COMPOSE) build
 
-start:
+start:		$(DEPENDECIES)
 			@printf "Start built containers\n"
 			$(DOCKER-COMPOSE) start
 
-restart:
+restart:	$(DEPENDECIES)
 			@printf "Restart built containers\n"
 			$(DOCKER-COMPOSE) restart
 
@@ -42,6 +43,10 @@ ps:
 images:
 			@printf "List images\n"
 			docker images
+
+networks:
+			@printf "List networks\n"
+			docker network ls
 
 volumes:
 			@printf "List volumes\n"
