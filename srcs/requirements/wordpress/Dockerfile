@@ -1,45 +1,47 @@
 FROM debian:buster
 
-RUN 	apt-get update -y \
-&&		apt-get upgrade -y
-	
-# INSTALL Curl(Client url): hit an URL from our code
-RUN		apt-get install curl less -y
+# Update package manager and upgrade packages
+RUN apt-get update -y \
+&& apt-get upgrade -y
 
-# INSTALL PHP
-RUN		apt-get install -y php
+# Install Curl (client url) to hit a URL from our code
+RUN apt-get install curl less -y
 
-# INSTALL PHP-FPM (FastCgi process manager)
-	# protocol that define how my web server (nginx) communicates 
-	# with my CGI programm (php) about the received request
-RUN 	apt-get install -y php-fpm
+# Install PHP
+RUN apt-get install -y php
 
-# INSTALL MYSQL (old db driver) && MYSQLI (improved driver)
-RUN		apt-get install -y php-mysql \
-&&		apt-get install -y php-mysqli
+# Install PHP-FPM (FastCgi process manager)
+# PHP-FPM is a protocol that defines how a web server (e.g. nginx) communicates 
+# with a CGI program (e.g. php) about the received request
+RUN apt-get install -y php-fpm
 
-# INSTALL MARIADB-CLIENT TO CONNECT TO THE DATABASE 
-RUN		apt-get install -y mariadb-client
+# Install the old MySQL driver (mysql) and the improved driver (mysqli)
+RUN apt-get install -y php-mysql \
+&& apt-get install -y php-mysqli
 
-# DOWNLOAD WP-CLI FROM GITHUB && DEFINE WP-CLI TO EXECUTABLE
-RUN 	curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
-&&		chmod +x wp-cli.phar \
-&&		mv wp-cli.phar /usr/local/bin/wp
+# Install the MariaDB client to connect to the database
+RUN apt-get install -y mariadb-client
 
-# CREATE DIRECTORY TO INSTALL WORDPRESS
-RUN		mkdir -p /var/www/html/wordpress
+# Download WP-CLI from GitHub and make it executable
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+&& chmod +x wp-cli.phar \
+&& mv wp-cli.phar /usr/local/bin/wp
 
-EXPOSE 	9000
+# Create a directory to install WordPress
+RUN mkdir -p /var/www/html/wordpress
 
-# COPY SH FILE IN TMP DIRECTORY
-COPY	/tools/entrypoint.sh /tmp
+# Expose port 9000 for PHP-FPM
+EXPOSE 9000
 
-# COPY OUR CONF FILE IN OUR CONTAINER
-COPY	/tools/www.conf /etc/php/7.3/fpm/pool.d/www.conf
+# Copy the entrypoint script to the tmp directory
+COPY tools/entrypoint.sh /tmp
 
-# INSTALL DUMB-INIT
+# Copy the php-fpm configuration file to the container
+COPY tools/www.conf /etc/php/7.3/fpm/pool.d/www.conf
+
+# Install dumb-init, a simple process supervisor and init system
 RUN apt-get install -y dumb-init
 
+# Set dumb-init as the entrypoint and run the entrypoint script in the container
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
-
-CMD ["sh", "/tmp/entrypoint.sh" ]
+CMD ["sh", "/tmp/entrypoint.sh"]
