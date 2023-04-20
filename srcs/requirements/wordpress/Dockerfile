@@ -1,10 +1,10 @@
 FROM debian:buster
 
-# Update package manager and upgrade packages
+# Update and upgrade the package list in the image
 RUN apt-get update -y \
 && apt-get upgrade -y
 
-# Install Curl (client url) to hit a URL from our code
+# Install Curl and Less command line utilities
 RUN apt-get install curl less -y
 
 # Install PHP

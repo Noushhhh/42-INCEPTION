@@ -2,7 +2,7 @@ DOCKER-COMPOSE = docker-compose -f srcs/docker-compose.yml
 
 MARIADB_VOLUME = /home/ana/data/mariadb
 WORDPRESS_VOLUME = /home/ana/data/wordpress
-DEPENDECIES = $(MARIADB_VOLUME) $(WORDPRESS_VOLUME)
+DEPENDENCIES = $(MARIADB_VOLUME) $(WORDPRESS_VOLUME)
 
 all: up
 
@@ -12,7 +12,7 @@ $(MARIADB_VOLUME):
 $(WORDPRESS_VOLUME):
 	sudo mkdir -p $(WORDPRESS_VOLUME)
 
-up:		$(DEPENDECIES)
+up:		$(DEPENDENCIES)
 		@printf "Build, recreate, start containers\n"
 		$(DOCKER-COMPOSE) up -d --build
 
@@ -20,11 +20,11 @@ build:
 			@printf "Build images from dockerfiles\n"
 			$(DOCKER-COMPOSE) build
 
-start:		$(DEPENDECIES)
+start:		$(DEPENDENCIES)
 			@printf "Start built containers\n"
 			$(DOCKER-COMPOSE) start
 
-restart:	$(DEPENDECIES)
+restart:	$(DEPENDENCIES)
 			@printf "Restart built containers\n"
 			$(DOCKER-COMPOSE) restart
 
@@ -34,7 +34,7 @@ stop:
 
 down:
 			@printf "Stop and remove containers, networks\n"
-			sudo $(DOCKER-COMPOSE) down --rmi all --volumes --remove-orphans
+			$(DOCKER-COMPOSE) down --rmi all --volumes --remove-orphans
 
 ps:
 			@printf "List containers\n"
@@ -54,10 +54,11 @@ volumes:
 
 clean: 
 		$(DOCKER-COMPOSE) down --rmi all --volumes --remove-orphans
+		sudo rm -rf $(DEPENDENCIES)
 
 fclean: clean
 		@printf "Remove images, containers and volumes.\n"
-		sudo rm -rf /home/ana/data/*
+		sudo docker system prune -f -a
 
 prune: fclean
 		@printf "Remove all unused containers, images and volumes\n"
